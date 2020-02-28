@@ -24,7 +24,7 @@ pip install -r requments.txt
     # 连接数据库
      mysql -uroot -p
     # 创建数据库
-     create database docshaing charset=utf8;
+     create database docsharing charset=utf8;
     ```
     - 修改配置文件
     ```
