@@ -58,8 +58,8 @@ pip install -r requments.txt
    
 ### 效果图
 
- ![首页](https://github.com/pangxiaobin/DocSharing/images/home.png) 
- ![项目列表页](https://github.com/pangxiaobin/DocSharing/images/project_list.png) 
- ![项目编辑页](https://github.com/pangxiaobin/DocSharing/images/project_edit.png) 
- ![项目详情展示页](https://github.com/pangxiaobin/DocSharing/images/project_show.png) 
+ ![首页](https://github.com/pangxiaobin/DocSharing/blob/master/images/home.png) 
+ ![项目列表页](https://github.com/pangxiaobin/DocSharing/blob/master/images/project_list.png) 
+ ![项目编辑页](https://github.com/pangxiaobin/DocSharing/blob/master/images/project_edit.png) 
+ ![项目详情展示页](https://github.com/pangxiaobin/DocSharing/blob/master/images/project_show.png) 
    
