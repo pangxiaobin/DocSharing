@@ -1,0 +1,201 @@
+{% extends  "base.html" %}
+
+{% block title %}
+  首页 | 欢迎使用文档分享网站
+{% endblock %}
+
+{% block content %}
+  <div class="layui-container">
+    <div>
+      <fieldset class="layui-elem-field">
+        <legend>创建一个项目</legend>
+        <div class="layui-field-box">
+          <button type="button" class="layui-btn" id="create_project">创建项目</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="layui-elem-field">
+        <legend>进入项目</legend>
+        <div class="layui-field-box">
+          <button type="button" class="layui-btn" id="project_l_btn">项目列表</button>
+          <button type="button" class="layui-btn" id="enter_project">进入项目</button>
+        </div>
+      </fieldset>
+      <div class="layui-card">
+        <div class="layui-card-header" style="font-weight: bold">项目介绍:</div>
+        <div class="layui-card-body">
+          本项目后端使用 <a href="https://github.com/pallets/flask" target="_blank">flask</a>, <br>
+          前端ui使用 <a href="https://www.layui.com/doc/element/color.html" target="_blank">layui</a> <br>
+          树形结构使用 <a href="http://www.wisdomelon.com/DTreeHelper/" target="_blank">dtree</a> <br>
+          富文本使用 <a href="https://github.com/wangfupeng1988/wangEditor" target="_blank">wangEditor</a> <br>
+          markdown插件使用 <a href="https://github.com/nhn/tui.editor" target="_blank">tui-editor</a> <br>
+        </div>
+      </div>
+      <div class="layui-card">
+        <div class="layui-card-header" style="font-weight: bold">使用说明:</div>
+        <div class="layui-card-body">
+          首先创建自己的项目（项目名不能重复），记住项目名。<br>
+          进入项目后可以创建文件夹及文件，文本书写内容包含富文本编辑器和markdown编辑器。
+        </div>
+      </div>
+
+    </div>
+    <div style="display: none; margin-right: 50px; margin-top: 20px" id="project_form">
+      <form class="layui-form" action="{{ url_for('main.create_project') }}" method="post">
+        <div class="layui-form-item">
+          <label class="layui-form-label"><font color="red">*</font>项目名</label>
+          <div class="layui-input-block">
+            <input type="text" name="name" id="projectName" required lay-verify="required" placeholder="请输入项目名"
+                   autocomplete="off"
+                   class="layui-input"> <font id="nameInfo" style="float: left"></font>
+          </div>
+        </div>
+        {#        <div class="layui-form-item">#}
+        {#          <label class="layui-form-label">邮箱</label>#}
+        {#          <div class="layui-input-block">#}
+        {#            <input type="email" name="email" placeholder="请输入邮箱，方便找回忘记的项目" autocomplete="off" class="layui-input">#}
+        {#          </div>#}
+        {#        </div>#}
+        {#        <div class="layui-form-item">#}
+        {#          <label class="layui-form-label">密码框</label>#}
+        {#          <div class="layui-input-block">#}
+        {#            <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off"#}
+        {#                   class="layui-input">#}
+        {#          </div>#}
+        {#        </div>#}
+        <div class="layui-form-item">
+          <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div style="display: none; margin-right: 50px; margin-top: 20px" id='enter_form'>
+      <form class="layui-form" id="ent_form">
+        <div class="layui-form-item">
+          <label class="layui-form-label"><font color="red">*</font>项目名</label>
+          <div class="layui-input-block">
+            <input type="text" name="name" required lay-verify="required" placeholder="请输入项目名"
+                   autocomplete="off"
+                   class="layui-input">
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-block">
+            <button class="layui-btn" type="button" id="ent_sub">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div style="display: none; padding: 20px 20px" id="project_list">
+        <div class="layui-form">
+          <table class="layui-table">
+            <thead>
+              <tr>
+                <th>项目</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for project in projects %}
+              <tr>
+                <td>{{ project.name }}</td>
+                <td><a href="{{ url_for('main.get_project',url= project.url) }}" style="color: #009688">编辑</a>
+                    <a href="{{ url_for('main.show_project',url= project.url) }}" style="color: #009688">查看</a>
+                </td>
+              </tr>
+            {% endfor  %}
+            </tbody>
+          </table>
+        </div>
+  </div>
+{% endblock %}
+
+{% block extjs %}
+  <script type="text/javascript">
+      layui.use(['form', 'layer', 'jquery'], function () {
+          var $ = layui.jquery,
+              form = layui.form,
+              layer = layui.layer;
+          // 创建项目名
+          $(document).on('click', '#create_project', function () {
+              layer.open({
+                  type: 1,
+                  title: ['创建新项目', 'background-color: #009688;text-align:center;' +
+                  'font-size:16px; color: white;font-weight: bold;'],
+                  id: 1,
+                  area: ['600px', '360px'],
+                  shadeClose: true, //点击遮罩关
+                  content: $('#project_form'),
+                  end: function () {
+                      layer.closeAll()
+                  }
+              });
+          });
+          $('#projectName').change(function () {
+              var name = $(this).val();
+              $.getJSON('/check_project/', {'name': name}, function (data) {
+                  if (data['status'] === '200') {
+                      $('#nameInfo').html('&#10004;').css({color: 'green', fontSize: '14px'});
+                  } else {
+                      $('#nameInfo').html('项目名已存在').css({color: 'red', fontSize: '14px'});
+                  }
+              })
+
+          });
+          form.on('submit(formDemo)', function (data) {
+              var name_color = $('#nameInfo').css('color');
+              if (name_color === 'rgb(255, 0, 0)') {
+                  layer.msg('请修改后提交', {
+                      icon: 2,
+                      time: 2000
+                  });
+                  return false
+              } else {
+                  return true
+              }
+          });
+          $('#enter_project').click(function () {
+              layer.open({
+                  type: 1,
+                  title: ['进入项目', 'background-color: #009688;text-align:center;' +
+                  'font-size:16px; color: white;font-weight: bold;'],
+                  id: 1,
+                  area: ['600px', '360px'],
+                  shadeClose: true, //点击遮罩关
+                  content: $('#enter_form'),
+                  end: function () {
+                      layer.closeAll()
+                  }
+              });
+          });
+          $('#ent_sub').on('click', function () {
+              $.post('/project/', $('#ent_form').serialize(), function (data) {
+                  if (data['code'] === '200') {
+                      window.open('/project/' + data['url'], target = "_self")
+                  }
+                  else {
+                      layer.msg('未找到项目')
+                  }
+              })
+          });
+          $('#project_l_btn').click(function () {
+              layer.open({
+                  type: 1,
+                  title: ['项目列表', 'background-color: #009688;text-align:center;' +
+                  'font-size:16px; color: white;font-weight: bold;'],
+                  area: ['600px', '700px'],
+                  shadeClose: true, //点击遮罩关
+                  content: $('#project_list'),
+                  end: function () {
+                      layer.closeAll()
+                  }
+              });
+          });
+
+      });
+  </script>
+{% endblock %}

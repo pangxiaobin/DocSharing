@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ project.name }}
+{% endblock %}
+
+{% block extcss %}
+  {{ super() }}
+  {#  树形插件样式#}
+  <link rel="stylesheet" href="{{ url_for('static', filename='layui_ext/dtree/dtree.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='layui_ext/dtree/font/dtreefont.css') }}">
+  {#  markdown 样式#}
+  <link rel="stylesheet" href="{{ url_for('static', filename='tui_editor/css/tui-editor.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='tui_editor/css/tui-editor-contents.css') }}">
+  <link rel="stylesheet" href="https://uicdn.toast.com/tui-editor/latest/tui-editor.css"></link>
+  <link rel="stylesheet" href="https://uicdn.toast.com/tui-editor/latest/tui-editor-contents.css"></link>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.css"></link>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css"></link>
+  <style>
+    .dtree-zdy-item-this {
+      background-color: #d8d8d8 !important;
+    }
+
+    /* 当前选中行样式*/
+    .dtree-zdy-item:hover {
+      background-color: #f2f2f2 !important;
+    }
+
+    /* 行悬停样式
+    .dtree-zdy-item cite {
+      font-size: 28px !important;
+    }*/
+
+    /* 行文字样式*/
+    .dtree-zdy-item:hover cite {
+      color: #5FB878 !important;
+    }
+
+    /* 行悬停文字样式*/
+    .dtree-zdy-dtreefont {
+      font-size: 22px !important;
+    }
+
+    /* 一级图标、二级图标、复选框样式*/
+    .dtree-zdy-ficon {
+      color: #ff8a35 !important;
+    }
+
+    /*一级图标特定样式*/
+    .dtree-zdy-icon {
+      color: #ff8a35 !important;
+    }
+
+    /*二级图标特定样式*/
+    .dtree-zdy-checkbox:hover {
+      color: #5FB878 !important;
+    }
+
+    /*复选框悬停样式*/
+    .dtree-zdy-choose {
+      color: #5FB878 !important;
+    }
+
+    /* 复选框选中样式*/
+    .dtree-zdy-item {
+      line-height: 36px;
+    !important;
+      padding-left: 16px;
+    !important;
+    }
+
+    {##toolbarTree {#}
+    {#  width: 200px !important;#}
+    {#}#}
+
+    .w-e-text {
+      padding: 0 10px;
+      overflow-y: scroll;
+    }
+
+    .w-e-text-container {
+      min-height: 60vh;
+    }
+
+    .dtree-menubar {
+      padding-left: 33px !important;
+    }
+
+    .dtree-menubar .layui-btn-group .layui-btn-sm {
+      height: 30px;
+      width: 30px;
+      line-height: 20px;
+      padding: 0 5px;
+      font-size: 12px;
+    }
+
+    {#保存按钮样式#}
+    .b_save {
+      margin-top: 20px;
+      margin-right: 20px;
+      float: right;
+    }
+   #toolbarTree {
+    width: 100% !important;
+    }
+
+  </style>
+{% endblock %}
+
+{% block content %}
+{#  房间id#}
+  <input type="hidden" value="{{ project.id }}" name="project_id" id="RID">
+  <div class="container">
+    <div class="layui-row ">
+      <div class="layui-fluid">
+        <div class="layui-col-xs2">
+          <div id="toolbarDiv" style="margin-top: 6vh;">
+            <ul id="toolbarTree" class="dtree" data-id="0" ></ul>
+          </div>
+        </div>
+        <div class="layui-col-xs10">
+          <div class="layui-tab layui-tab-brief" lay-filter="file_content" lay-allowclose="true"
+               style="margin-top: 20px;margin-left: 40px">
+            <ul class="layui-tab-title">
+              {#            <li class="layui-this" lay-id="11">网站设置</li>#}
+            </ul>
+            <div class="layui-tab-content" style="min-height: 400px; padding: 10px 10px">
+              {#            <div class="layui-tab-item layui-show">内容1</div>#}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extjs %}
+  {#  富文本插件js#}
+  <script type="text/javascript" src="{{ url_for('static', filename='editJs/wangEditor.min.js') }}"></script>
+  {#  markdown插件js#}
+  <script type="text/javascript"
+          src="{{ url_for('static', filename='tui_editor/js/tui-editor-Editor-full.js') }}"></script>
+
+  {{ super() }}
+  <script>
+      layui.extend({
+          dtree: "{{ url_for('static', filename='layui_ext/dtree/dtree') }}"
+      }).use(['element', 'layer', 'table', 'code', 'util', 'dtree', 'form'], function () {
+          var element = layui.element, layer = layui.layer, table = layui.table, util = layui.util, dtree = layui.dtree,
+              form = layui.form, $ = layui.$;
+
+          function isInArray(arr, value) {
+              //　判断是否在list当中
+              for (var i = 0; i < arr.length; i++) {
+                  if (value === arr[i]) {
+                      return true;
+                  }
+              }
+              return false;
+          }
+
+          var editor_array = new Array();
+
+          function create_edit(nodeId, fileType) {
+              var editor = NaN;
+              if (fileType === '1') {
+                  // 创建富文本编辑器
+                  const E = window.wangEditor;
+                  editor = new E('#editor' + nodeId);
+                  editor.create();
+              } else {
+                  // 创建markdown
+                  editor = new tui.Editor({
+                      el: document.querySelector('#editor' + nodeId),
+                      height: '60vh',
+                      initialEditType: 'markdown',
+                      previewStyle: 'vertical',
+                  });
+              }
+              if (editor_array.hasOwnProperty(nodeId) === false) {
+                  editor_array[nodeId] = editor
+              }
+
+          }
+
+          function show_edit(nodeId) {
+              var content = "bb";
+              var editor = NaN;
+              $.get('/get_file/?file_id=' + nodeId, function (data) {
+                  if (data['code'] === '200') {
+                      content = data['content'];
+                  } else {
+                      content = '欢迎使用';
+                  }
+                  var fileType = data['type'];
+                  if (fileType === 1) {
+                      // 展示富文本编辑器
+                      var E = window.wangEditor;
+                      editor = new E('#editor' + nodeId);
+                      editor.create();
+                      editor.txt.html(content)
+                  } else {
+                      // 展示markdown
+                      editor = new tui.Editor({
+                          el: document.querySelector('#editor' + nodeId),
+                          height: '60vh',
+                          initialEditType: 'markdown',
+                          previewStyle: 'vertical',
+                      });
+                      editor.setMarkdown(content);
+
+                  }
+                  if (editor_array.hasOwnProperty(nodeId) === false) {
+                      editor_array[nodeId] = editor
+                  }
+              });
+
+
+          }
+
+          var RID = $('#RID').val();  //　project id
+          console.log(RID);
+          var DateTree = dtree.render({
+              //　初始化树展示
+              elem: "#toolbarTree",
+              url: "/folder_files/?project_id=" + RID,
+              method: 'GET',
+              type: "all",  // 一次加载，不重复添加
+              initLevel: 1,
+              line: true,  // 显示树线
+              skin: "zdy",
+              toolbar: true,
+              {#height: "full-150",#}
+              scroll: "#toolbarDiv",
+              toolbarStyle: {title: "文件", area: ["40%", "100%"]},
+              toolbarShow: ['add', 'edit'],
+              toolbarBtn: [[{
+                  "label": "下拉框", "name": "file_type", "type": "select", "optionsData": function () {
+                      return {"1": "富文本", "2": "markdown"};
+                  }
+              }
+              ] // 这就是自定义新增中的内容
+              ],
+              menubar: true,
+              menubarTips: {
+                  group: ["moveDown", "moveUp", "refresh", {
+                      menubarId: 'addRoot', icon: 'dtree-icon-jia', title: '添加根结点', handler: function () {
+                          layer.prompt({
+                              shadeClose : true,
+                              formType: 0,
+                              value: '',
+                              title: '新建文件夹',
+                              area: ['600px', '360px'],
+                              },
+                              function (value, index, elem) {
+                                 var  RID = $('#RID').val();
+                                 $.post('/create_folder/', {'folder_name': value, 'project_id':RID }, function (data) {
+                                    if (data['code'] === '200') {
+                                        layer.closeAll();
+                                        dtree.reload("toolbarTree", {url: "/folder_files/?project_id=" + RID});
+                                        layer.close(index);
+                                    }
+                                });
+
+                          });
+
+                      }
+                  }],
+              },
+              toolbarFun: {
+                  loadToolbarBefore: function (buttons, param, $div) {
+                      if (param.leaf) { // 如果是叶子节点 取出工具栏
+                          buttons.addToolbar = null;
+                          {#buttons.editToolbar = null;#}
+                          buttons.delToolbar = null
+                      }
+                      return buttons; // 将按钮对象返回
+                  },
+                  addTreeNode: function (treeNode, $div) {
+                      // 增加file
+                      $.ajax({
+                          type: "post",
+                          data: treeNode,
+                          url: "/create_file/",
+                          success: function (result) {
+                              DateTree.changeTreeNodeAdd(result.nodeId); // 添加成功
+                              element.tabAdd('file_content', {
+                                  title: result.name,
+                                  content: '<div id="editor' + result.nodeId + '"></div><div><button type="button" class="b_save layui-btn">保存</button><input type="hidden" value="' + result.nodeId + '" ><input type="hidden" value="' + result.fileType + '" ></div>',
+                                  id: result.nodeId
+                              });
+                              element.tabChange('file_content', result.nodeId);
+                              create_edit(result.nodeId, result.fileType)
+                          },
+                          error: function () {
+                              DateTree.changeTreeNodeAdd(false); // 添加失败
+                          }
+                      });
+                  },
+                  editTreeNode: function (treeNode, $div) {
+                      // 编辑文件名
+                      $.ajax({
+                          type: "post",
+                          data: treeNode,
+                          url: "/update_folder_file/",
+                          success: function (result) {
+                              DateTree.changeTreeNodeEdit(true);// 修改成功
+                              //DTree1.changeTreeNodeEdit(result.param); // 修改成功，返回一个JSON对象
+                          },
+                          error: function () {
+                              DateTree.changeTreeNodeEdit(false);//修改失败
+                          }
+                      });
+                  },
+              }
+          });
+
+          dtree.on("node(toolbarTree)", function (obj) {
+              console.log(obj.param);
+
+              if (obj.param.leaf) { // 如果是叶子节点
+                  var layID = Array();
+                  $(".layui-tab-title").children("li").each(function () {
+                      layID.push($(this).attr("lay-id"));
+                  });
+                  console.log(layID);
+                  var layid = obj.param.nodeId;
+                  if (isInArray(layID, layid)) {
+                      element.tabChange('file_content', layid);
+                  } else {
+                      element.tabAdd('file_content', {
+                          title: obj.param.context,
+                          content: '<div class="text" id="editor' + layid + '"></div> <div><button type="button" class="b_save layui-btn">保存</button><input type="hidden" value="' + layid + '" ><input type="hidden" value="' + obj.param.basicData + '" ></div>',
+                          id: layid
+                      });
+                      element.tabChange('file_content', layid);
+                      show_edit(layid);
+                  }
+              }
+
+          });
+          $(document).on('click', '.b_save', function () {
+              // 保存内容
+              {#$(this).parent().prev().children('.w-e-text-container').children('.w-e-text').html();#}
+              var content = '';
+              var file_id = $(this).next().val();
+              var file_type = $(this).next().next().val();
+              if (file_type === '1') {
+                  content = editor_array[file_id].txt.html()
+              } else {
+                  content = editor_array[file_id].getMarkdown()
+              }
+              var data = {
+                  'file_id': file_id,
+                  "content": content
+              };
+              {#console.log(content)#}
+              $.post('/update_file/', data, function (data) {
+                  if (data['code'] === '201') {
+                      layer.msg('保存成功')
+                  } else {
+                      layer.alert('请重试')
+                  }
+              });
+          })
+      });
+
+
+  </script>
+{% endblock %}

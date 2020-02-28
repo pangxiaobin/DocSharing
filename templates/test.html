@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>wangEditor demo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='tui_editor/css/tui-editor.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='tui_editor/css/tui-editor-contents.css') }}">
+  <link rel="stylesheet" href="https://uicdn.toast.com/tui-editor/latest/tui-editor.css"></link>
+<link rel="stylesheet" href="https://uicdn.toast.com/tui-editor/latest/tui-editor-contents.css"></link>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.css"></link>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css"></link>
+</head>
+<body>
+    <div id="editor">
+
+    </div>
+
+    <div><button class="layui-btn-primary bb"> 保存 </button></div>
+
+    <!-- 注意， 只需要引用 JS，无需引用任何 CSS ！！！-->
+{#    <script type="text/javascript" src="{{ url_for('static', filename='editJs/wangEditor.min.js')}}" ></script>#}
+{#    <script type="text/javascript" src="{{ url_for('static', filename='tui_editor/js/tui-editor-Editor.js')}}" ></script>#}
+{#    <script type="text/javascript" src="{{ url_for('static', filename='tui_editor/js/tui-editor-Editor-all.js')}}" ></script>#}
+    <script src="https://cdn.bootcss.com/jquery/1.12.3/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='tui_editor/js/tui-editor-Editor-full.js')}}" ></script>
+    <script type="text/javascript">
+        var  ss = '* [x] cdsaafsd\n' +
+            '* [x] dsafaad\n' +
+            '* [x] dasfadsf\n' +
+            '* [x] safasdfasdf\n' +
+            '* [x] sadfasdfsadf\n' +
+            '(index):37 # hello word\n' +
+            '\n' +
+            '* [x] cdsaafsd\n' +
+            '* [x] dsafaad\n' +
+            '* [x] dasfadsf\n' +
+            '* [x] safasdfasdf\n' +
+            '* [x] sadfasdfsadf\n' +
+            '\n' +
+            '``` js\n' +
+            '# heklls\n' +
+            '```'
+        var instance = new tui.Editor({
+        el: document.querySelector('#editor'),
+        initialEditType: 'markdown',
+        previewStyle: 'vertical',
+        height: '300px',
+        initialValue: ss
+
+     });
+        console.log(instance.getMarkdown())
+      $(".bb").click(function () {
+          console.log(instance.getMarkdown())
+      })
+    </script>
+</body>
+</html>

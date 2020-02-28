@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>{% block title %}title{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='layui/css/layui.css') }}">
+    {% block extcss %}
+    {% endblock %}
+    <script type="text/javascript" src="{{ url_for('static', filename='layui/layui.js') }}"></script>
+</head>
+<body>
+{% block header %}
+  <ul class="layui-nav layui-bg-green top_nva" lay-filter="">
+    <li class="layui-nav-item">
+      <a href="{{ url_for('main.index') }}">文档分享</a>
+    </li>
+  </ul>
+{% endblock %}
+
+{% block content %}
+
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
+
+{% block extjs %}
+
+{% endblock %}
+</body>
+</html>

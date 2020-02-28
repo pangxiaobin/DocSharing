@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block extcss %}
+  {{ super() }}
+  {#  树形插件样式#}
+  <link rel="stylesheet" href="{{ url_for('static', filename='layui_ext/dtree/dtree.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='layui_ext/dtree/font/dtreefont.css') }}">
+  {#  markdown 样式#}
+  <link rel="stylesheet" href="{{ url_for('static', filename='tui_editor/css/tui-editor.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='tui_editor/css/tui-editor-contents.css') }}">
+  <link rel="stylesheet" href="https://uicdn.toast.com/tui-editor/latest/tui-editor.css"></link>
+  <link rel="stylesheet" href="https://uicdn.toast.com/tui-editor/latest/tui-editor-contents.css"></link>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.css"></link>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css"></link>
+  <style>
+    .w-e-text {
+      padding: 0 10px;
+      overflow: auto !important;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="right-nva">
+    <ul class="layui-nav layui-nav-tree layui-nav-side layui-bg-cyan" lay-filter="r-nva" style="top:60px; bottom: 20px">
+      <!-- 侧边导航: <ul class="layui-nav layui-nav-tree layui-nav-side"> -->
+      {% for folder in folders %}
+        <li class="layui-nav-item">
+          <a href="javascript:void(0);">{{ folder.name }}</a>
+          <dl class="layui-nav-child">
+            {% for file in folder.files.all() %}
+              <dd><a href="javascript:void(0);" file_id="{{ file.id }}">{{ file.name }}</a></dd>
+            {% endfor %}
+          </dl>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="layui-container" style="top: 54px; bottom: 20px">
+    <div class="wang" style="display: none">
+      <div id="div1" class="toolbar" style="display: none">
+      </div>
+      <div id="div2"> <!--可使用 min-height 实现编辑区域自动增加高度-->
+        <p>请输入内容</p>
+      </div>
+    </div>
+    <div class="tui" style="display: none">
+      <div id="editSection"></div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extjs %}
+  <script type="text/javascript" src="{{ url_for('static', filename='editJs/wangEditor.min.js' ) }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='tui_editor/js/tui-editor-Editor-full.js') }}"></script>
+  <script>
+      //JavaScript代码区域
+      var tui_editor = tui.Editor.factory({
+              el: document.querySelector('#editSection'),
+              viewer: true,
+              height: '500px',
+            });
+      layui.use(['element', 'layer', 'jquery'], function () {
+          var element = layui.element;
+          var layer = layui.layer;
+          var $ = layui.jquery;
+          var E = window.wangEditor;
+          var wang = $('.wang');
+          var tui = $('.tui');
+          var wang_editor = new E('#div1', '#div2');  // 两个参数也可以传入 elem 对象，class 选择器
+          wang_editor.create();
+          wang_editor.$textElem.attr('contenteditable', false);
+
+
+
+          element.on('nav(r-nva)', function (elem) {
+              //得到当前点击的DOM对象
+              var file_id = elem.attr('file_id');
+              if (file_id === undefined) {
+                  return false
+              }
+              $.getJSON('/file_detail/?file_id=' + file_id, function (data) {
+                  if (data['type'] === 1) {
+                      wang_editor.txt.html(data['content']);
+                      wang.show();
+                      tui.hide()
+                  } else {
+                      tui_editor.setMarkdown(data['content']);
+                      wang.hide();
+                      tui.show();
+
+                  }
+              })
+          });
+          $('.layui-nav-item').eq(3).addClass('layui-this');
+      });
+  </script>
+{% endblock %}
