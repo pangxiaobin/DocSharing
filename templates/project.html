@@ -219,7 +219,6 @@
           }
 
           var RID = $('#RID').val();  //　project id
-          console.log(RID);
           var DateTree = dtree.render({
               //　初始化树展示
               elem: "#toolbarTree",
@@ -316,14 +315,11 @@
           });
 
           dtree.on("node(toolbarTree)", function (obj) {
-              console.log(obj.param);
-
               if (obj.param.leaf) { // 如果是叶子节点
                   var layID = Array();
                   $(".layui-tab-title").children("li").each(function () {
                       layID.push($(this).attr("lay-id"));
                   });
-                  console.log(layID);
                   var layid = obj.param.nodeId;
                   if (isInArray(layID, layid)) {
                       element.tabChange('file_content', layid);
@@ -354,7 +350,6 @@
                   'file_id': file_id,
                   "content": content
               };
-              {#console.log(content)#}
               $.post('/update_file/', data, function (data) {
                   if (data['code'] === '201') {
                       layer.msg('保存成功')
