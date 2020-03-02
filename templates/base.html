@@ -7,7 +7,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='layui/css/layui.css') }}">
     {% block extcss %}
     {% endblock %}
-    <script type="text/javascript" src="{{ url_for('static', filename='layui/layui.js') }}"></script>
+{#    <script type="text/javascript" src="{{ url_for('static', filename='layui/layui.js') }}"></script>#}
+     <script src="//layui.hcwl520.com.cn/layui-v2.5.3/layui.js?v=201906040202"></script>
+    <script>
+        if (typeof layui === 'undefined') {
+            var sc = document.createElement('script');
+            sc.src = "{{ url_for('static', filename='layui/layui.js') }}";
+            document.head.appendChild(sc);
+        }
+    </script>
 </head>
 <body>
 {% block header %}

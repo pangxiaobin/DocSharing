@@ -136,10 +136,27 @@
 
 {% block extjs %}
   {#  富文本插件js#}
-  <script type="text/javascript" src="{{ url_for('static', filename='editJs/wangEditor.min.js') }}"></script>
+  <script type="text/javascript" src="https://unpkg.com/wangeditor@3.1.1/release/wangEditor.min.js"></script>
+  <script>
+    if (typeof wangEditor === 'undefined') {
+            var wang = document.createElement('script');
+            wang.src = "{{ url_for('static', filename='editJs/wangEditor.min.js') }}";
+            document.head.appendChild(wang);
+        }
+  </script>
+{#  <script type="text/javascript" src="{{ url_for('static', filename='editJs/wangEditor.min.js') }}"></script>#}
+
   {#  markdown插件js#}
-  <script type="text/javascript"
-          src="{{ url_for('static', filename='tui_editor/js/tui-editor-Editor-full.js') }}"></script>
+  <script src="https://uicdn.toast.com/tui-editor/latest/tui-editor-Editor-full.js"></script>
+  <script>
+    if (typeof tui === 'undefined') {
+            var tuiEditor = document.createElement('script');
+            tuiEditor.src = "{{ url_for('static', filename='tui_editor/js/tui-editor-Editor-full.js') }}";
+            document.head.appendChild(tuiEditor);
+        }
+  </script>
+{#  <script type="text/javascript"#}
+{#          src="{{ url_for('static', filename='tui_editor/js/tui-editor-Editor-full.js') }}"></script>#}
 
   {{ super() }}
   <script>
